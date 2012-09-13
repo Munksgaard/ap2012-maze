@@ -6,7 +6,8 @@ data Direction = North | South | West | East
 
 type Position = (Int, Int)
 type Cell = [Direction]
-type Maze = Array Int Cell
+type Maze = Array (Int, Int) Cell
+
 move :: Direction -> Position -> Position
 move North  (x, y) = (x, y+1)
 move West   (x, y) = (x-1, y)

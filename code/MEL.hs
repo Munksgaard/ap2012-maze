@@ -1,3 +1,4 @@
+module MEL where
 import World as W
 
 data Relative = Ahead | ToLeft | ToRight | Behind
@@ -17,16 +18,17 @@ data Stm = Forward
          | Block [Stm]
          deriving (Eq, Show)
 
---traceable :: String -> (t -> a) -> t -> Trace a
 type Program = Stm
--- World = ...
+
+-- Definition of type is only to make it typecheck
+type World = (String, Maze)
 
 --newtype RobotCommand a = RC {runRC :: World -> ... }
 
---initialWorld :: Maze -> World
+initialWorld :: Maze -> World
 initialWorld m = undefined
 
--- interp : Stm -> RobotCommand()
+-- interp :: Stm -> RobotCommand()
 
 runProg :: Maze -> Program -> ([Position], Direction)
 runProg m p = undefined
