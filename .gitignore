@@ -31,3 +31,4 @@ cabal-dev
 *.maf
 *.mtc
 *.mtc0
+maze
