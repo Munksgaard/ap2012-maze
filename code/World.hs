@@ -67,11 +67,15 @@ withinBounds m = (>) (snd (A.bounds m))
 -- Tests wether a move from one position to the other is valid on a given board
 -- Assert withinBounds p1 & withinBounds p2
 validMove :: Maze -> Position -> Position -> Bool
-validMove m p1 p2 | dist p1 p2 == 1 = undefined
+validMove m p1 p2 | dist p1 p2 == 1 = not $ or [blocked p1 p2, blocked p2 p1]
                     -- Check if the direction has a wall
                     -- if not then take the cell in that direction and see if it
                     -- has a wall facing towards us
                   | otherwise = False 
+    where blocked from to = case (toDirection from to) of
+                                Just dir -> dir `elem` m!from
+                                Nothing -> False
+
 
 --listBounds :: [(Position, Cell)]  -> (Position,Position) -> (Position,Position)
 --listBounds [] p = p
