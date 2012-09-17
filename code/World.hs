@@ -1,5 +1,6 @@
 module World (Direction(..), Position, Cell, Maze, fromList, move, moves, validMove, toDirection, withinBounds,) where
 import Data.Array as A
+import Data.Maybe
 
 data Direction = North | East | South | West
   deriving (Show,Eq,Read,Enum)
@@ -14,14 +15,18 @@ type Cell = [Direction]
 type Maze = Array Position Cell
 
 -- Produces an empty maze with the specified size, starts at (0,0)
---emptyMaze :: Position -> Maze 
---emptyMaze p = A.array ((0,0), p) []
+emptyMaze :: Position -> Maze
+emptyMaze (x,y) = A.array ((0,0), (x,y)) 
+                  [((x1,y1), []) | x1 <- [0..x], y1 <- [0..y]]
 
 -- Generate a new instance of maze with bounds as specified.
 -- Check for walls are lazy
 -- assert bound > (0,0)
---generateMaze :: Position -> [(Position, Cell)] -> Maze
---generateMaze =A.array . (,) (0,0)
+generateMaze :: Position -> [(Position, Cell)] -> Maze
+generateMaze (x,y) cells = 
+    A.array ((0,0), (x,y)) 
+         [((x1,y1), Data.Maybe.fromMaybe [] $ lookup (x1,y1) cells) 
+              | x1 <- [0..x], y1 <- [0..y]]
  
 -- Returns a position if the move is valid, else it returns nothing
 move :: Direction -> Position -> Position
