@@ -62,17 +62,20 @@ toDirection (x1,y1) (x2,y2)  | x == 0 && y > 0 = Just North
 -- Test wether the position is within bounds of the maze
 -- Asserts Pos > (0,0)
 withinBounds :: Maze -> Position -> Bool
-withinBounds m = (>) (snd (A.bounds m))
+withinBounds m (x,y) = let (x1, y1) = (snd (A.bounds m))
+                       in x<=x1 && y<=y1
 
 -- Tests wether a move from one position to the other is valid on a given board
 -- Assert withinBounds p1 & withinBounds p2
 validMove :: Maze -> Position -> Position -> Bool
-validMove m p1 p2 | dist p1 p2 == 1 = not $ or [blocked p1 p2, blocked p2 p1]
+validMove m p1 p2 | dist p1 p2 == 1 = 
+                      withinBounds m p1 && withinBounds m p2 
+                                       && not (blocked p1 p2 || blocked p2 p1)
                     -- Check if the direction has a wall
                     -- if not then take the cell in that direction and see if it
                     -- has a wall facing towards us
-                  | otherwise = False 
-    where blocked from to = case (toDirection from to) of
+                  | otherwise = False
+    where blocked from to = case toDirection from to of
                                 Just dir -> dir `elem` m!from
                                 Nothing -> False
 
@@ -84,5 +87,4 @@ validMove m p1 p2 | dist p1 p2 == 1 = not $ or [blocked p1 p2, blocked p2 p1]
 -- Produces a maze from the cells
 -- Assert Forall (p,c) in xs: withinBounds p
 fromList :: [(Position, Cell)] -> Maze
---fromList xs = A.array . (listBounds xs ((0,0),(9,9))) xs
-fromList = A.array ((0,0),(9,9))
+fromList cells = generateMaze (maximum [pos | (pos,_) <- cells]) cells
