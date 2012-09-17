@@ -48,11 +48,11 @@ dist (x1,y1) (x2,y2) = x + y
 toDirection :: Position -> Position -> Maybe Direction
 toDirection (x1,y1) (x2,y2)  | x == 0 && y > 0 = Just North
                               | x == 0 && y < 0 = Just South
-                              | x > 0 && y == 0 = Just West
-                              | x < 0 && y == 0 = Just East
+                              | x < 0 && y == 0 = Just West
+                              | x > 0 && y == 0 = Just East
                               | otherwise = Nothing
-                              where x = max x1 x2 - min x1 x2
-                                    y = max y1 y2 - min y1 y2
+                              where x = x2 - x1
+                                    y = y2 - y1
 
 -- Test wether the position is within bounds of the maze
 -- Asserts Pos > (0,0)
