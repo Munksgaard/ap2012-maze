@@ -89,7 +89,7 @@ toDirection (x1,y1) (x2,y2)  | x == 0 && y > 0 = Just North
 -- Asserts Pos > (0,0)
 withinBounds :: Maze -> Position -> Bool
 withinBounds m (x,y) = let (x1, y1) = (snd (A.bounds m))
-                       in x<=x1 && y<=y1
+                       in x <= x1 && y <= y1
 
 -- Tests wether a move from one position to the other is valid on a given board
 -- Assert withinBounds p1 & withinBounds p2
@@ -97,18 +97,11 @@ validMove :: Maze -> Position -> Position -> Bool
 validMove m p1 p2 | dist p1 p2 == 1 = 
                       withinBounds m p1 && withinBounds m p2 
                                        && not (blocked p1 p2 || blocked p2 p1)
-                    -- Check if the direction has a wall
-                    -- if not then take the cell in that direction and see if it
-                    -- has a wall facing towards us
                   | otherwise = False
     where blocked from to = case toDirection from to of
-                                Just dir -> dir `elem` m!from
+                                Just dir -> dir `elem` m ! from
                                 Nothing -> False
 
-
---listBounds :: [(Position, Cell)]  -> (Position,Position) -> (Position,Position)
---listBounds [] p = p
---listBounds (((x1,y1),_):xs) ((x2, y2),(x3,y3)) = listBounds xs ((min x1 x2, min y1 y2), (max x1 x3, max y1 y3))
 
 -- Produces a maze from the cells
 -- Assert Forall (p,c) in xs: withinBounds p
