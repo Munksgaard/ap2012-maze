@@ -20,12 +20,6 @@ data Stm = Forward
 
 type Program = Stm
 
---newtype State a = S (State a -> (a, State a))
-
---instance Monad State where
---  return x = undefined
---  S f >>= g = undefined
-
 testMaze :: Maze
 testMaze = fromList [((0,0),[North,South,West]),((0,1),[North,South,West])
                     ,((0,2),[South,West]),((0,3),[West,East])
