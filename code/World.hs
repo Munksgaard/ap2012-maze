@@ -1,9 +1,40 @@
-module World (Direction(..), Position, Cell, Maze, fromList, move, moves, validMove, toDirection, withinBounds,) where
+module World (Direction(..)
+             , Position
+             , Cell
+             , Maze
+             , fromList
+             , move
+             , moves
+             , validMove
+             , toDirection
+             , withinBounds
+             , otherDir
+             , rightTurn
+             , leftTurn) where
+
 import Data.Array as A
 import Data.Maybe
 
 data Direction = North | East | South | West
   deriving (Show,Eq,Read,Enum)
+
+otherDir :: Direction -> Direction
+otherDir North = South
+otherDir South = North
+otherDir West = East
+otherDir East = West
+
+rightTurn :: Direction -> Direction
+rightTurn North = East
+rightTurn East = South
+rightTurn South = West
+rightTurn West = North
+
+leftTurn :: Direction -> Direction
+leftTurn North = West
+leftTurn West = South
+leftTurn South = East
+leftTurn East = North
 
 type Position = (Int, Int)
 --newtype Position a = Position{getPosition :: (a,a)}
@@ -13,11 +44,6 @@ type Position = (Int, Int)
 
 type Cell = [Direction]
 type Maze = Array Position Cell
-
--- Produces an empty maze with the specified size, starts at (0,0)
-emptyMaze :: Position -> Maze
-emptyMaze (x,y) = A.array ((0,0), (x,y)) 
-                  [((x1,y1), []) | x1 <- [0..x], y1 <- [0..y]]
 
 -- Generate a new instance of maze with bounds as specified.
 -- Check for walls are lazy
