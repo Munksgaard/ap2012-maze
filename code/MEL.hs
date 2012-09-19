@@ -1,5 +1,5 @@
 module MEL where
-import World as W
+import World
 
 data Relative = Ahead | ToLeft | ToRight | Behind
   deriving (Eq, Show)
@@ -20,55 +20,95 @@ data Stm = Forward
 
 type Program = Stm
 
+testMaze :: Maze
+testMaze = fromList [((0,0),[North,South,West]),((0,1),[North,South,West])
+                    ,((0,2),[South,West]),((0,3),[West,East])
+                    ,((0,4),[North,West]),((1,0),[South]),((1,1),[North])
+                    ,((1,2),[South,East]),((1,3),[North,West])
+                    ,((1,4),[North,South,East]),((2,0),[North,South])
+                    ,((2,1),[South,East]),((2,2),[West,East]),((2,3),[])
+                    ,((2,4),[North,West,East]),((3,0),[North,South])
+                    ,((3,1),[South,West]),((3,2),[West])
+                    ,((3,3),[]),((3,4),[North,West,East])
+                    ,((4,0),[North,South,East]),((4,1),[North,South,East])
+                    ,((4,2),[North,South,East]),((4,3),[South,East])
+                    ,((4,4),[North,West,East])]
+
 data Robot = Robot  { position :: Position
                     , direction :: Direction
                     , history::[Position]
                     }
 
-
 type World = (Robot, Maze)
 
-newtype RobotCommand a  = RC {runRC :: World -> (a, World)}
+newtype RobotCommand a = RC {runRC :: World -> (a, World)}
 
-instance Monad RobotCommand where
-  return x = RC (\s -> (x, s))
-  RC st >>= f = RC (\s -> let (a, s') = st s in runRC (f a) s')
-
-
---  st >>= stm = RC (\s -> let (x, s') = runRC st s in (interp stm s' , s'))
---  s0 >>= f = RC (\s -> let (x,s') = apply s0 s in (apply (f x) s', s'))
-  -- m a -> (a -> m b) -> m b
-  -- (State a) -> (a -> State b) -> State b
-  -- (s -> (a ,s)) -> (a -> s -> (b, s)) -> (s -> (b,s))
---  st >>= stm = RC (\s -> let (x, s') = st s in interp stm s')
---  st >>= f = RC (\s ->  let (x, s') = s in (f x, s'))
---  st >> f = RC {runRC = (
+absDir :: Robot -> Relative -> Direction
+absDir robot Ahead = direction robot
+absDir robot ToLeft = leftTurn $ direction robot
+absDir robot ToRight = rightTurn $ direction robot
+absDir robot Behind = oppositeDir $ direction robot
 
 initialWorld :: Maze -> World
 initialWorld m = (Robot{position = (0,0), direction = North, history=[]}, m)
 
-fromRelative :: Relative -> Direction -> Direction
+instance Monad RobotCommand where
+    return x = RC $ \s -> (x, s)
+    (RC h) >>= f = RC $ \(oldRob, oldMaze) -> let (a, (newRob, _)) = h (oldRob, oldMaze)
+                                                  (RC g) = f a
+                              in g (newRob, oldMaze)
 
-fromRelative Ahead d    = d
-fromRelative ToLeft d   = pred d
-fromRelative ToRight d  = succ d
-fromRelative Behind d   = succ $ succ d
+tryMove :: Maze -> Position -> Direction -> Position
+tryMove maze pos dir = let newpos = move dir pos in
+                         if validMove maze pos newpos then
+                             newpos
+                         else pos
 
-evalC :: Cond -> Bool
-evalC (Wall r)  = True
-evalC (And c1 c2) = evalC c1 && evalC c2 
-evalC (Not c)   = not $ evalC c
+evalC :: Maze -> Robot -> Cond -> Bool
+evalC maze robot (Wall rel) = not $ validMove maze (position robot) $ move (absDir robot rel) (position robot)
+evalC maze robot (And c1 c2) = evalC maze robot c1 && evalC maze robot c2
+evalC maze robot (Not c)   = not $ evalC maze robot c
 
+-- (World -> (a , World)) -> (a -> (World -> (b, World))) -> (World -> (b, World))
 interp :: Stm -> RobotCommand ()
-interp Forward      = return ()                              --(, North), t))--RC (\s -> s >>= (\(p,d) -> uncurry (\t -> move)))
-                         --let ((p,d),s') = s in s >>= (move p d)) --(\((p,d),s) -> (move p d,s))  -- kig ind i robot, hente position, lave move (hvis valid), returner state
---interp Backward     = undefined
---interp TurnRight    = undefined
---interp TurnLeft     = undefined
-interp (If c s0 s1) = if evalC c then interp s0 else interp s1
---interp (While c s)  = if evalC c then s:(While c s):[] else skip
-interp (Block [])   = undefined
---interp (Block (x:xs)) = return x >>= interp 
---for each x
+interp Forward = RC $ \(robot, maze) -> ((), (newRobot maze robot, maze))
+    where newRobot maze robot = Robot (newPosition maze robot) (direction robot)
+                                (newHistory robot)
+          newPosition maze robot = tryMove maze (position robot) (direction robot)
+          newHistory robot = position robot : history robot
+interp Backward = RC $ \(robot, maze) -> ((), (newRobot maze robot, maze))
+    where newRobot maze robot = Robot (newPosition maze robot) (direction robot)
+                                (newHistory robot)
+          newPosition maze robot = tryMove maze (position robot) (oppositeDir $ direction robot)
+          newHistory robot = position robot : history robot
+interp TurnRight = RC $ \(robot, maze) -> ((), (newRobot robot, maze))
+    where newRobot robot = Robot (position robot) (rightTurn $ direction robot)
+                                (history robot)
+interp TurnLeft = RC $ \(robot, maze) -> ((), (newRobot robot, maze))
+    where newRobot robot = Robot (position robot) (leftTurn $ direction robot)
+                                (history robot)
+interp (If c s0 s1) = RC $ \(robot, maze) ->
+                      if evalC maze robot c then
+                          runRC (interp s0) (robot, maze)
+                      else
+                          runRC (interp s1) (robot, maze)
+interp (While c stm) = RC $ \(robot, maze) ->
+                       if evalC maze robot c then
+                           let (_, newWorld) = runRC (interp stm) (robot, maze)
+                           in runRC (interp $ While c stm) newWorld
+                       else (\s -> ((), s)) (robot, maze)
+interp (Block []) = return ()
+interp (Block (stm:stms)) = do 
+  interp stm
+  interp $ Block stms
+
+-- Fx. (runRC (interp Forward)) ini
+-- testIt = do
+--   interp Forward
+--   interp Forward
+
 runProg :: Maze -> Program -> ([Position], Direction)
-runProg m p = undefined
+runProg maze prog = let (_, (robot, _)) = runRC (interp prog) (initialWorld maze)
+                    in (reverse (position robot : history robot), direction robot)
+
+-- runProg testMaze $ Block [TurnRight, Forward]
