@@ -8,7 +8,7 @@ module World (Direction(..)
              , validMove
              , toDirection
              , withinBounds
-             , otherDir
+             , oppositeDir
              , rightTurn
              , leftTurn) where
 
@@ -18,11 +18,11 @@ import Data.Maybe
 data Direction = North | East | South | West
   deriving (Show,Eq,Read,Enum)
 
-otherDir :: Direction -> Direction
-otherDir North = South
-otherDir South = North
-otherDir West = East
-otherDir East = West
+oppositeDir :: Direction -> Direction
+oppositeDir North = South
+oppositeDir South = North
+oppositeDir West = East
+oppositeDir East = West
 
 rightTurn :: Direction -> Direction
 rightTurn North = East
