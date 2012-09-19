@@ -43,14 +43,20 @@ type World = (Robot, Maze)
 
 newtype RobotCommand a = RC {runRC :: World -> (a, World)}
 
+absDir :: Robot -> Relative -> Direction
+absDir robot Ahead = direction robot
+absDir robot ToLeft = leftTurn $ direction robot
+absDir robot ToRight = rightTurn $ direction robot
+absDir robot Behind = oppositeDir $ direction robot
+
 initialWorld :: Maze -> World
 initialWorld m = (Robot{position = (0,0), direction = North, history=[]}, m)
 
 instance Monad RobotCommand where
     return x = RC $ \s -> (x, s)
-    (RC h) >>= f = RC $ \s -> let (a, newWorld) = h s
-                                  (RC g) = f a  
-                              in g newWorld
+    (RC h) >>= f = RC $ \(oldRob, oldMaze) -> let (a, (newRob, _)) = h (oldRob, oldMaze)
+                                                  (RC g) = f a
+                              in g (newRob, oldMaze)
 
 tryMove :: Maze -> Position -> Direction -> Position
 tryMove maze pos dir = let newpos = move dir pos in
@@ -58,10 +64,10 @@ tryMove maze pos dir = let newpos = move dir pos in
                              newpos
                          else pos
 
-evalC :: Cond -> Bool
-evalC (Wall r)  = True
-evalC (And c1 c2) = evalC c1 && evalC c2 
-evalC (Not c)   = not $ evalC c
+evalC :: Maze -> Robot -> Cond -> Bool
+evalC maze robot (Wall rel) = not $ validMove maze (position robot) $ move (absDir robot rel) (position robot)
+evalC maze robot (And c1 c2) = evalC maze robot c1 && evalC maze robot c2
+evalC maze robot (Not c)   = not $ evalC maze robot c
 
 -- (World -> (a , World)) -> (a -> (World -> (b, World))) -> (World -> (b, World))
 interp :: Stm -> RobotCommand ()
@@ -73,7 +79,7 @@ interp Forward = RC $ \(robot, maze) -> ((), (newRobot maze robot, maze))
 interp Backward = RC $ \(robot, maze) -> ((), (newRobot maze robot, maze))
     where newRobot maze robot = Robot (newPosition maze robot) (direction robot)
                                 (newHistory robot)
-          newPosition maze robot = tryMove maze (position robot) (otherDir $ direction robot)
+          newPosition maze robot = tryMove maze (position robot) (oppositeDir $ direction robot)
           newHistory robot = position robot : history robot
 interp TurnRight = RC $ \(robot, maze) -> ((), (newRobot robot, maze))
     where newRobot robot = Robot (position robot) (rightTurn $ direction robot)
@@ -81,8 +87,16 @@ interp TurnRight = RC $ \(robot, maze) -> ((), (newRobot robot, maze))
 interp TurnLeft = RC $ \(robot, maze) -> ((), (newRobot robot, maze))
     where newRobot robot = Robot (position robot) (leftTurn $ direction robot)
                                 (history robot)
-interp (If _ _ _) = undefined
-interp (While _ _) = undefined
+interp (If c s0 s1) = RC $ \(robot, maze) ->
+                      if evalC maze robot c then
+                          runRC (interp s0) (robot, maze)
+                      else
+                          runRC (interp s1) (robot, maze)
+interp (While c stm) = RC $ \(robot, maze) ->
+                       if evalC maze robot c then
+                           let (_, newWorld) = runRC (interp stm) (robot, maze)
+                           in runRC (interp $ While c stm) newWorld
+                       else (\s -> ((), s)) (robot, maze)
 interp (Block []) = return ()
 interp (Block (stm:stms)) = do 
   interp stm
