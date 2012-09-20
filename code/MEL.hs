@@ -68,7 +68,7 @@ moveRobot m r d = if validMove m oldPos newPos then Just newPos else Nothing
 evalC :: Maze -> Robot -> Cond -> Bool
 evalC maze robot (Wall rel) = not $ validMove maze (position robot) $ move (absDir robot rel) (position robot)
 evalC maze robot (And c1 c2) = evalC maze robot c1 && evalC maze robot c2
-evalC maze robot (Not c)   = not $ evalC maze robot c
+evalC maze robot (Not c) = not $ evalC maze robot c
 evalC maze robot AtGoalPos = position robot == snd (bounds maze)
 
 -- (World -> (a , World)) -> (a -> (World -> (b, World))) -> (World -> (b, World))
