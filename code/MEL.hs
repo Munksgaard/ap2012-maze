@@ -32,10 +32,10 @@ type World = (Robot, Maze)
 
 data Result = Win ([Position], Direction)
             | Stall ([Position], Direction)
-            | MoveError String
+            | MoveError String Robot
               deriving (Show)
 
-newtype RobotCommand a = RC {runRC :: World -> Either String (a, Robot)}
+newtype RobotCommand a = RC {runRC :: World -> Either (String, Robot) (a, Robot)}
 
 absDir :: Robot -> Relative -> Direction
 absDir robot Ahead = direction robot
@@ -49,7 +49,7 @@ initialWorld m = (Robot{position = (0,0), direction = North, history=[]}, m)
 instance Monad RobotCommand where
     return x = RC $ \(rb, _) -> Right (x, rb)
     (RC h) >>= f = RC $ \(rb,mz) -> case h (rb, mz) of
-                                      Left msg -> Left msg
+                                      Left e -> Left e
                                       Right (a, rb1) -> let RC g = f a
                                         in g (rb1, mz)
 
@@ -71,39 +71,55 @@ evalC maze robot (And c1 c2) = evalC maze robot c1 && evalC maze robot c2
 evalC maze robot (Not c) = not $ evalC maze robot c
 evalC maze robot AtGoalPos = position robot == snd (bounds maze)
 
+getWorld :: RobotCommand World
+getWorld = RC $ \(r,m) -> Right ((r,m),r)
+
+setRobot :: Robot -> RobotCommand ()
+setRobot newRobot = RC $ \_ -> Right ((), newRobot)
+
+robotError :: (String, Robot) -> RobotCommand ()
+robotError e = RC $ \_ -> Left e
+
+
 -- (World -> (a , World)) -> (a -> (World -> (b, World))) -> (World -> (b, World))
 interp :: Stm -> RobotCommand ()
-interp Forward = RC $ \(robot, maze) -> let d = direction robot
-                      in case moveRobot maze robot d of
-                        Just p -> Right ((), Robot { position=p
-                                                   , direction=d
-                                                   , history=position robot : history robot})
-                        Nothing -> Left $ "Could not move " ++ show d ++ " in position " ++ show (position robot) ++ "\n" ++ show robot
-interp Backward = RC $ \(robot, maze) -> let d = oppositeDir $ direction robot
-                      in case moveRobot maze robot d of
-                        Just p -> Right ((), Robot { position=p
-                                                   , direction=d
-                                                   , history= p:history robot})
-                        Nothing -> Left $ "Could not move " ++ show  d ++" in position " ++ show (position robot) ++ "\n" ++ show robot
-interp TurnLeft = RC $ \(robot, _) -> let d = leftTurn $ direction robot
-                      in Right ((), Robot { position=position robot
-                                          , direction=d
-                                          , history= history robot})
-interp TurnRight = RC $ \(robot, _) -> let d = rightTurn $ direction robot
-                      in Right ((), Robot { position=position robot
-                                          , direction=d
-                                          , history=history robot})
-interp (If c s0 s1) = RC $ \(robot, maze) ->
-                      if evalC maze robot c then
-                          runRC (interp s0) (robot, maze)
-                      else
-                          runRC (interp s1) (robot, maze)
-interp (While c stm) = RC $ \(robot, maze) ->
-                       if evalC maze robot c then
-                           case runRC (interp stm) (robot, maze) of
-                             Left e -> Left e
-                             Right (_, rb) -> runRC (interp $ While c stm) (rb, maze)
-                       else Right ((), robot)
+interp Forward = do 
+  (robot, maze) <- getWorld
+  let d = direction robot 
+  case moveRobot maze robot d of 
+    Just p -> setRobot Robot { position=p
+                             , direction=d
+                             , history=position robot : history robot}
+    Nothing -> robotError ( "Could not move " ++ show d ++ " in position " ++ show (position robot), robot)
+interp Backward = do
+  (robot, maze) <- getWorld
+  let d = oppositeDir $ direction robot
+  case moveRobot maze robot d of
+    Just p -> setRobot Robot { position=p
+                               , direction=d
+                               , history= p:history robot}
+    Nothing -> robotError ("Could not move " ++ show  d ++" in position " ++ show (position robot), robot)
+interp TurnLeft = do
+  (robot, _) <- getWorld
+  let d = leftTurn $ direction robot
+  setRobot Robot { position=position robot
+                 , direction=d
+                 , history= history robot}
+interp TurnRight = do
+  (robot, _) <- getWorld
+  let d = rightTurn $ direction robot
+  setRobot Robot { position=position robot
+                 , direction=d
+                 , history=history robot}
+interp (If c s0 s1) = do
+  (robot, maze) <- getWorld
+  if evalC maze robot c then (interp s0) else (interp s1)
+interp (While c stm) = do
+  (robot, maze) <- getWorld
+  if evalC maze robot c then do
+      interp stm
+      interp $ While c stm
+  else setRobot robot
 interp (Block []) = return ()
 interp (Block (stm:stms)) = do 
   interp stm
@@ -116,7 +132,7 @@ interp (Block (stm:stms)) = do
 
 runProg :: Maze -> Program -> Result
 runProg maze prog = case runRC (interp prog) (initialWorld maze) of
-                      Left msg -> MoveError msg
+                      Left (msg, robot) -> MoveError msg robot
                       Right (_, robot) ->
                           let p = position robot
                               h = reverse $ p : history robot
