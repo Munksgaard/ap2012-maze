@@ -113,13 +113,13 @@ interp TurnRight = do
                  , history=history robot}
 interp (If c s0 s1) = do
   (robot, maze) <- getWorld
-  if evalC maze robot c then (interp s0) else (interp s1)
+  if evalC maze robot c then interp s0 else interp s1
 interp (While c stm) = do
   (robot, maze) <- getWorld
   if evalC maze robot c then do
       interp stm
       interp $ While c stm
-  else setRobot robot
+    else setRobot robot
 interp (Block []) = return ()
 interp (Block (stm:stms)) = do 
   interp stm
