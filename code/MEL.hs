@@ -3,13 +3,13 @@ import World
 import Data.Array
 
 data Relative = Ahead | ToLeft | ToRight | Behind
-  deriving (Eq, Show)
+  deriving (Eq, Show, Read)
 
 data Cond = Wall Relative
           | And Cond Cond
           | Not Cond
           | AtGoalPos
-          deriving (Eq, Show)
+          deriving (Eq, Show, Read )
 
 data Stm = Forward
          | Backward
@@ -18,7 +18,7 @@ data Stm = Forward
          | If Cond Stm Stm
          | While Cond Stm
          | Block [Stm]
-         deriving (Eq, Show)
+         deriving (Eq, Show, Read)
 
 type Program = Stm
 
