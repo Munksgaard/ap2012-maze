@@ -1,13 +1,9 @@
 module World (Direction(..)
              , Position
-             , Cell
              , Maze
              , fromList
              , move
-             , moves
              , validMove
-             , toDirection
-             , withinBounds
              , oppositeDir
              , rightTurn
              , leftTurn) where
