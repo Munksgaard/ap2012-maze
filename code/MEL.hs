@@ -1,5 +1,6 @@
 module MEL where
 import World
+import Data.Array
 
 data Relative = Ahead | ToLeft | ToRight | Behind
   deriving (Eq, Show)
@@ -7,6 +8,7 @@ data Relative = Ahead | ToLeft | ToRight | Behind
 data Cond = Wall Relative
           | And Cond Cond
           | Not Cond
+          | AtGoalPos
           deriving (Eq, Show)
 
 data Stm = Forward
@@ -27,6 +29,11 @@ data Robot = Robot  { position :: Position
            deriving (Show)
 
 type World = (Robot, Maze)
+
+data Result = Win ([Position], Direction)
+            | Stall ([Position], Direction)
+            | MoveError String
+              deriving (Show)
 
 newtype RobotCommand a = RC {runRC :: World -> Either String (a, Robot)}
 
@@ -62,6 +69,7 @@ evalC :: Maze -> Robot -> Cond -> Bool
 evalC maze robot (Wall rel) = not $ validMove maze (position robot) $ move (absDir robot rel) (position robot)
 evalC maze robot (And c1 c2) = evalC maze robot c1 && evalC maze robot c2
 evalC maze robot (Not c)   = not $ evalC maze robot c
+evalC maze robot AtGoalPos = position robot == snd (bounds maze)
 
 -- (World -> (a , World)) -> (a -> (World -> (b, World))) -> (World -> (b, World))
 interp :: Stm -> RobotCommand ()
@@ -90,10 +98,12 @@ interp (If c s0 s1) = RC $ \(robot, maze) ->
                           runRC (interp s0) (robot, maze)
                       else
                           runRC (interp s1) (robot, maze)
-interp (While c stm) =  RC $ \(robot, maze) ->
-                            case runRC (interp stm) (robot,maze) of
-                              Left _        -> Right ((), robot)
-                              Right (_, rb) -> runRC (interp $ While c stm) (rb, maze)
+interp (While c stm) = RC $ \(robot, maze) ->
+                       if evalC maze robot c then
+                           case runRC (interp stm) (robot, maze) of
+                             Left e -> Left e
+                             Right (_, rb) -> runRC (interp $ While c stm) (rb, maze)
+                       else Right ((), robot)
 interp (Block []) = return ()
 interp (Block (stm:stms)) = do 
   interp stm
@@ -104,10 +114,13 @@ interp (Block (stm:stms)) = do
 --   interp Forward
 --   interp Forward
 
-runProg :: Maze -> Program -> ([Position], Direction)
+runProg :: Maze -> Program -> Result
 runProg maze prog = case runRC (interp prog) (initialWorld maze) of
-                      Left msg -> error msg
-                      Right (_, robot) -> let h = reverse $ position robot : history robot
-                                              d = direction robot
-                                          in (h,d)
+                      Left msg -> MoveError msg
+                      Right (_, robot) ->
+                          let p = position robot
+                              h = reverse $ p : history robot
+                              d = direction robot
+                          in if p == snd (bounds maze) then Win (h,d)
+                             else Stall (h,d)
 -- runProg testMaze $ Block [TurnRight, Forward]
