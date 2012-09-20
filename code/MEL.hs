@@ -24,6 +24,7 @@ data Robot = Robot  { position :: Position
                     , direction :: Direction
                     , history::[Position]
                     }
+           deriving (Show)
 
 type World = (Robot, Maze)
 
@@ -68,26 +69,22 @@ interp Forward = RC $ \(robot, maze) -> let d = direction robot
                       in case moveRobot maze robot d of
                         Just p -> Right ((), Robot { position=p
                                                    , direction=d
-                                                   , history= p:history robot})
-                        Nothing -> Left "Could not move forward"
+                                                   , history=position robot : history robot})
+                        Nothing -> Left $ "Could not move " ++ show d ++ " in position " ++ show (position robot) ++ "\n" ++ show robot
 interp Backward = RC $ \(robot, maze) -> let d = oppositeDir $ direction robot
                       in case moveRobot maze robot d of
                         Just p -> Right ((), Robot { position=p
                                                    , direction=d
                                                    , history= p:history robot})
-                        Nothing -> Left "Could not move backwards"
-interp TurnLeft = RC $ \(robot, maze) -> let d = leftTurn $ direction robot
-                      in case moveRobot maze robot d of
-                        Just p -> Right ((), Robot { position=p
-                                                   , direction=d
-                                                   , history= p:history robot})
-                        Nothing -> Left "Could not move left"
-interp TurnRight = RC $ \(robot, maze) -> let d = rightTurn $ direction robot
-                      in case moveRobot maze robot d of
-                        Just p -> Right ((), Robot { position=p
-                                                   , direction=d
-                                                   , history= p:history robot})
-                        Nothing -> Left "Could not move right"
+                        Nothing -> Left $ "Could not move " ++ show  d ++" in position " ++ show (position robot) ++ "\n" ++ show robot
+interp TurnLeft = RC $ \(robot, _) -> let d = leftTurn $ direction robot
+                      in Right ((), Robot { position=position robot
+                                          , direction=d
+                                          , history= history robot})
+interp TurnRight = RC $ \(robot, _) -> let d = rightTurn $ direction robot
+                      in Right ((), Robot { position=position robot
+                                          , direction=d
+                                          , history=history robot})
 interp (If c s0 s1) = RC $ \(robot, maze) ->
                       if evalC maze robot c then
                           runRC (interp s0) (robot, maze)
@@ -109,7 +106,7 @@ interp (Block (stm:stms)) = do
 
 runProg :: Maze -> Program -> ([Position], Direction)
 runProg maze prog = case runRC (interp prog) (initialWorld maze) of
-                      Left _ -> ([],North)
+                      Left msg -> error msg
                       Right (_, robot) -> let h = reverse $ position robot : history robot
                                               d = direction robot
                                           in (h,d)
