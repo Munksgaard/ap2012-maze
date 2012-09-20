@@ -1,6 +1,7 @@
+
 Navigating the Maze
 Ken Friis Larsen (kflarsen@diku.dk)
-Last revision: September 9, 2012
+Last revision: September 20, 2012
 Objective
 
 The objective of this assignment is to gain hands-on programming experience with Haskell and to get an understanding of how to implement and program with monads.
@@ -64,6 +65,23 @@ Declare a Haskell module World (in the file with name World.hs) with the followi
 
     fromList :: [(Position, [Direction])] -> Maze
 
+    For instance, the value testMaze:
+
+    testMase = fromList [((0,0),[North,South,West]),((0,1),[North,South,West])
+                        ,((0,2),[South,West]),((0,3),[West,East])
+                        ,((0,4),[North,West]),((1,0),[South]),((1,1),[North])
+                        ,((1,2),[South,East]),((1,3),[North,West])
+                        ,((1,4),[North,South,East]),((2,0),[North,South])
+                        ,((2,1),[South,East]),((2,2),[West,East]),((2,3),[])
+                        ,((2,4),[North,West,East]),((3,0),[North,South])
+                        ,((3,1),[South,West]),((3,2),[West])
+                        ,((3,3),[]),((3,4),[North,West,East])
+                        ,((4,0),[North,South,East]),((4,1),[North,South,East])
+                        ,((4,2),[North,South,East]),((4,3),[South,East])
+                        ,((4,4),[North,West,East])]
+
+    Corresponds to the maze:
+
 Part 2: A MEL interpreter
 
 We use the following types for modelling abstract syntax trees for MEL programs:
@@ -74,6 +92,7 @@ data Relative = Ahead | ToLeft | ToRight | Behind
 data Cond = Wall Relative
           | And  Cond Cond
           | Not  Cond
+          | AtGoalPos
           deriving (Eq, Show)
             
 data Stm = Forward
@@ -85,7 +104,9 @@ data Stm = Forward
          | Block [Stm]
          deriving (Eq, Show)
 
-A MEL program is just a statement (Stm) which could be a block consisting of a list of statements. The semantics of each statement should be straightforward.
+type Program = Stm
+
+A MEL program is just a statement (Stm) which could be a block consisting of a list of statements. The semantics of each statement should be straightforward. The condition AtGoalPos is true if the robot is in the top right corner, otherwise it is false.
 
     A type Robot for modelling the state of a robot in a maze. That is, which position in maze the robot is currently at and which direction the robot is facing. Furthermore, the robot should also keep a history of the path it has travelled so far (a list of positions).
 
@@ -101,7 +122,7 @@ A MEL program is just a statement (Stm) which could be a block consisting of a l
 
     newtype RobotCommand a = RC { runRC :: World -> ... }
 
-Note that the maze does not change during execution, your type should reflect this. Your type should also specify how you deal with errors and your should document that.
+    Note that the maze does not change during execution, your type should reflect this. Your type should also specify how you deal with errors and your should document that.
 
     Define a function interp, that computes effect of executing a statement, with the type:
 
@@ -109,9 +130,13 @@ Note that the maze does not change during execution, your type should reflect th
 
     Define a function runProg
 
-    runProg :: Maze -> Program -> ([Postion], Direction)
+    runProg :: Maze -> Program -> Result ([Postion], Direction)
 
-    runProg runs a program started from the initial world derived from a given maze. The return value is the path traversed by the robot, and the final direction of the robot.
+    runProg runs a program started from the initial world derived from a given maze. The return value is the path traversed by the robot, and the final direction of the robot. The Result type above is not specified because it depends on how you decide to handle errors.
+
+    For example, runProg testMaze TurnRight should return ([(0,0)],West) (perhaps with a suitable constructor applied as well).
+
+    Suggestion for testing: write a robot program that will find a path from the initial position to the goal position in all (loop free) mazes.
 
 Part 3: Extensions
 
@@ -120,5 +145,3 @@ Part 3: Extensions
     Is this an interesting extension? Why?
 
     Extend MEL with a Fork statement that allows a robot to fork itself into two robots: one facing the original directing and one turned right. Robots can only be forked four times (resulting in a maximum of 16 robots in one world). You may also want to extend MEL with an extra condition to allow robots to detect which of the forked robots it is.
-
-
