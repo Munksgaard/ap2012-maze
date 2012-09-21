@@ -58,9 +58,6 @@ move West   (x, y) = (x-1, y)
 move South  (x, y) = (x, y-1)
 move East   (x, y) = (x+1, y)
 
-moves :: [Direction] -> Position -> Position 
-moves = flip $ foldr move 
-
 -- Calculates the distance on the board between two positions
 -- largest size doesnt matter, however if they have different signs the maze is
 -- invalid
