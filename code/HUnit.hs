@@ -195,13 +195,21 @@ validMoveTestList = TestList[TestLabel "testValidMove1" testValidMove1
                             ,TestLabel "testValidMove47" testValidMove47]
 
 -- Test that oppositeDir truly returns the opposite dir
+oppositeDir_test1 :: Test
 oppositeDir_test1 = TestCase $ assertEqual "oppositeDir in: North" South (oppositeDir North)
+
+oppositeDir_test2 :: Test
 oppositeDir_test2 = TestCase $ assertEqual "oppositeDir in: East" West (oppositeDir East)
+
+oppositeDir_test3 :: Test
 oppositeDir_test3 = TestCase $ assertEqual "oppositeDir in: South" North (oppositeDir South)
+
+oppositeDir_test4 :: Test
 oppositeDir_test4 = TestCase $ assertEqual "oppositeDir in: West" East (oppositeDir West)
 -- No need for further testing here since this is all the possible arguments and
 -- the function is deterministic
  
+oppositeDirTestList :: Test
 oppositeDirTestList = TestList [ TestLabel "oppositeDir_test1" oppositeDir_test1
                                , TestLabel "oppositeDir_test2" oppositeDir_test2
                                , TestLabel "oppositeDir_test3" oppositeDir_test3
@@ -209,15 +217,24 @@ oppositeDirTestList = TestList [ TestLabel "oppositeDir_test1" oppositeDir_test1
                                ]
 
 -- Test that the function truly makes a right turn
+rightTurn_test1 :: Test
 rightTurn_test1 = TestCase $ assertEqual "rightTurn in: North" East (rightTurn North)
+
+rightTurn_test2 :: Test
 rightTurn_test2 = TestCase $ assertEqual "rightTurn in: East" South (rightTurn East)
+
+rightTurn_test3 :: Test
 rightTurn_test3 = TestCase $ assertEqual "rightTurn in: South" West (rightTurn South)
+
+rightTurn_test4 :: Test
 rightTurn_test4 = TestCase $ assertEqual "rightTurn in: West" North (rightTurn West)
 
 -- Test that the function wraps after 4 rightturns
+rightTurn_test5 :: Test
 rightTurn_test5 = TestCase $ assertEqual "rightTurn wrap" North 
   (rightTurn $ rightTurn $ rightTurn $ rightTurn North)
 
+rightTurnTestList :: Test
 rightTurnTestList = TestList [ TestLabel "rightTurn_test1" rightTurn_test1
                              , TestLabel "rightTurn_test2" rightTurn_test2
                              , TestLabel "rightTurn_test3" rightTurn_test3
@@ -226,16 +243,25 @@ rightTurnTestList = TestList [ TestLabel "rightTurn_test1" rightTurn_test1
                              ]
 
  -- Test that the function truly makes a left turn
+leftTurn_test1 :: Test
 leftTurn_test1 = TestCase $ assertEqual "leftTurn in: North" West (leftTurn North)
+
+leftTurn_test2 :: Test
 leftTurn_test2 = TestCase $ assertEqual "leftTurn in: East" North (leftTurn East)
+
+leftTurn_test3 :: Test
 leftTurn_test3 = TestCase $ assertEqual "leftTurn in: South" East (leftTurn South)
+
+leftTurn_test4 :: Test
 leftTurn_test4 = TestCase $ assertEqual "leftTurn in: West" South (leftTurn West)
 -- All possible values
 
 -- Test that the function wraps after 4 leftturns
+leftTurn_test5 :: Test
 leftTurn_test5 = TestCase $ assertEqual "leftTurn wrap" North 
   (leftTurn $ leftTurn $ leftTurn $ leftTurn North)
 
+leftTurnTestList :: Test
 leftTurnTestList = TestList [ TestLabel "leftTurn_test1" leftTurn_test1
                              , TestLabel "leftTurn_test2" leftTurn_test2
                              , TestLabel "leftTurn_test3" leftTurn_test3
@@ -244,15 +270,23 @@ leftTurnTestList = TestList [ TestLabel "leftTurn_test1" leftTurn_test1
                              ]
 
 -- Test that right- and leftTurns are truly opposite
+rightleft_test1 :: Test
 rightleft_test1 = TestCase $ assertEqual "right/left Test1 in: North" 
   (rightTurn North) (oppositeDir (leftTurn North))
+
+rightleft_test2 :: Test
 rightleft_test2 = TestCase $ assertEqual "right/left Test2 in: East" 
   (rightTurn East) (oppositeDir (leftTurn East))
+
+rightleft_test3 :: Test
 rightleft_test3 = TestCase $ assertEqual "right/left Test3 in: South" 
   (rightTurn South) (oppositeDir (leftTurn South))
+
+rightleft_test4 :: Test
 rightleft_test4 = TestCase $ assertEqual "right/left Test4 in: West" 
   (rightTurn West) (oppositeDir (leftTurn West))
 
+rightleftTestList :: Test
 rightleftTestList = TestList [ TestLabel "right/left test1" rightleft_test1
                     , TestLabel "right/left test2" rightleft_test2
                     , TestLabel "right/left test3" rightleft_test3
@@ -261,19 +295,37 @@ rightleftTestList = TestList [ TestLabel "right/left test1" rightleft_test1
 
 -- The move function asserts that the position and direction is a validmove.
 -- Test move in all directions
+move_test1 :: Test
 move_test1 = TestCase $ assertEqual "move test1 in: West (1,0)" (0,0) (move West (1,0))
+
+move_test2 :: Test
 move_test2 = TestCase $ assertEqual "move test1 in: North (1,0)" (1,1) (move North (1,0))
+
+move_test3 :: Test
 move_test3 = TestCase $ assertEqual "move test1 in: East (1,0)" (2,0) (move East (1,0))
 
+move_test4 :: Test
 move_test4 = TestCase $ assertEqual "move test1 in: North (0,1)" (0,2) (move North (0,1))
+
+move_test5 :: Test
 move_test5 = TestCase $ assertEqual "move test1 in: East (0,1)" (1,1) (move East (0,1))
+
+move_test6 :: Test
 move_test6 = TestCase $ assertEqual "move test1 in: South (0,1)" (0,0) (move South (0,1))
 
+move_test7 :: Test
 move_test7 = TestCase $ assertEqual "move test1 in: North (1,1)" (1,2) (move North (1,1))
+
+move_test8 :: Test
 move_test8 = TestCase $ assertEqual "move test1 in: East (1,1)" (2,1) (move East (1,1))
+
+move_test9 :: Test
 move_test9 = TestCase $ assertEqual "move test1 in: South (1,1)" (1,0) (move South (1,1))
+
+move_test10 :: Test
 move_test10 = TestCase $ assertEqual "move test1 in: West (1,1)" (0,1) (move West (1,1))
 
+moveTestList :: Test
 moveTestList = TestList $ [ TestLabel "move test1" move_test1
                           , TestLabel "move test2" move_test2
                           , TestLabel "move test3" move_test3
@@ -320,6 +372,7 @@ moveTestList = TestList $ [ TestLabel "move test1" move_test1
 
 -- Test that fromList only returns a valid maze no matter the input
 -- Give an empty list
+positiveCells :: [((Int, Int), [Direction])]
 positiveCells =[((0,0),[North,South,West]),((0,1),[North,South,West])
                     ,((0,2),[South,West]),((0,3),[West,East])
                     ,((0,4),[North,West]),((1,0),[South]),((1,1),[North])
@@ -332,9 +385,13 @@ positiveCells =[((0,0),[North,South,West]),((0,1),[North,South,West])
                     ,((4,0),[North,South,East]),((4,1),[North,South,East])
                     ,((4,2),[North,South,East]),((4,3),[South,East])
                     ,((4,4),[North,West,East])]
+
+positiveValidIndices :: [(Integer, Integer)]
 positiveValidIndices = [ (0,0),(0,1),(0,2),(0,3),(0,4),(1,0),(1,1),(1,2),(1,3),(1,4)
                        , (2,0),(2,1),(2,2),(2,3),(2,4),(3,0),(3,1),(3,2),(3,3),(3,4)
                        , (4,0),(4,1),(4,2),(4,3),(4,4)]
+
+positiveValidCells :: [[Direction]]
 positiveValidCells = [[North,South,West],[North,South,West]
                     ,[South,West],[West,East]
                     ,[North,West],[South],[North]
@@ -348,8 +405,10 @@ positiveValidCells = [[North,South,West],[North,South,West]
                     ,[North,South,East],[South,East]
                     ,[North,West,East]]
 
+positiveMaze :: Maze
 positiveMaze = fromList positiveCells
 
+negativeCells :: [((Int, Int), [Direction])]
 negativeCells = [((0,0),[North,South,West]),((0,-1),[North,South,West])
                     ,((0,-2),[South,West]),((0,-3),[West,East])
                     ,((0,-4),[North,West]),((-1,0),[South]),((-1,-1),[North])
@@ -362,21 +421,44 @@ negativeCells = [((0,0),[North,South,West]),((0,-1),[North,South,West])
                     ,((-4,-0),[North,South,East]),((-4,-1),[North,South,East])
                     ,((-4,-2),[North,South,East]),((-4,-3),[South,East])
                     ,((-4,-4),[North,West,East])]
+
+negativeValidIndices :: [(Integer, Integer)]
 negativeValidIndices = [(0,0)]
+
+negativeValidCells :: [[Direction]]
 negativeValidCells = [[North,South,West]]
+
+negativeMaze :: Maze
 negativeMaze = fromList negativeCells
 
+mixedCells :: [((Int, Int), [Direction])]
 mixedCells = positiveCells ++ negativeCells
+
+mixedValidCells :: [[Direction]]
 mixedValidCells = positiveValidCells
+
+mixedMaze :: Maze
 mixedMaze = fromList mixedCells
 
+fromList_test1 :: Test
 fromList_test1 = TestCase $ assertEqual "fromList test 1 " ((0,0),(4,4)) (bounds positiveMaze)
+
+fromList_test2 :: Test
 fromList_test2 = TestCase $ assertEqual "fromList test 2 " positiveValidCells (elems positiveMaze)
+
+fromList_test3 :: Test
 fromList_test3 = TestCase $ assertEqual "fromList test 3 " ((0,0),(0,0)) (bounds negativeMaze)
+
+fromList_test4 :: Test
 fromList_test4 = TestCase $ assertEqual "fromList test 4 " negativeValidCells (elems negativeMaze)
+
+fromList_test5 :: Test
 fromList_test5 = TestCase $ assertEqual "fromList test 5 " ((0,0),(4,4)) (bounds mixedMaze)
+
+fromList_test6 :: Test
 fromList_test6 = TestCase $ assertEqual "fromList test 6 " mixedValidCells (elems mixedMaze)
 
+fromListTestList :: Test
 fromListTestList = TestList [ TestLabel "fromList test 1" fromList_test1
                             , TestLabel "fromList test 2" fromList_test2
                             , TestLabel "fromList test 3" fromList_test3
@@ -385,6 +467,7 @@ fromListTestList = TestList [ TestLabel "fromList test 1" fromList_test1
                             , TestLabel "fromList test 6" fromList_test6
                             ]
 
+runAllTests :: IO ()
 runAllTests = do
   _ <- runTestTT oppositeDirTestList
   _ <- runTestTT rightTurnTestList
