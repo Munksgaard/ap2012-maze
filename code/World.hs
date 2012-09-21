@@ -101,4 +101,4 @@ validMove m p1 p2 | dist p1 p2 == 1 =
 -- Assert Forall (p,c) in xs: withinBounds p
 fromList :: [(Position, Cell)] -> Maze
 fromList [] = A.array ((0,0), (0,0)) [((0,0),[])]
-fromList cells = generateMaze (maximum [pos | (pos,_) <- cells]) cells
+fromList cells = generateMaze (maximum $ (0,0) : [(x,y) | ((x,y),_) <- cells, x >= 0, y>= 0]) cells
