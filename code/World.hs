@@ -82,7 +82,8 @@ toDirection (x1,y1) (x2,y2)  | x == 0 && y > 0 = Just North
 -- Asserts Pos > (0,0)
 withinBounds :: Maze -> Position -> Bool
 withinBounds m (x,y) = let (x1, y1) = (snd (A.bounds m))
-                       in x <= x1 && y <= y1
+                       in x <= x1 &&  x >= 0
+                              && y <= y1 && y >= 0
 
 -- Tests wether a move from one position to the other is valid on a given board
 -- Assert withinBounds p1 & withinBounds p2
