@@ -1,4 +1,11 @@
-module MEL where
+module MEL (Cond(..)
+           ,Stm(..)
+           ,Program
+           ,Relative(..)
+           ,Result(..)
+           ,Robot(..)
+           ,runProg) where
+
 import World
 import Data.Array
 
@@ -26,14 +33,14 @@ data Robot = Robot  { position :: Position
                     , direction :: Direction
                     , history::[Position]
                     }
-           deriving (Show)
+           deriving (Show, Eq)
 
 type World = (Robot, Maze)
 
 data Result = Win ([Position], Direction)
             | Stall ([Position], Direction)
             | MoveError String Robot
-              deriving (Show)
+              deriving (Show, Eq)
 
 newtype RobotCommand a = RC {runRC :: World -> Either (String, Robot) (a, Robot)}
 
@@ -96,8 +103,8 @@ interp Backward = do
   let d = oppositeDir $ direction robot
   case moveRobot maze robot d of
     Just p -> setRobot Robot { position=p
-                               , direction=d
-                               , history= p:history robot}
+                             , direction=direction robot
+                             , history=position robot : history robot}
     Nothing -> robotError ("Could not move " ++ show  d ++" in position " ++ show (position robot), robot)
 interp TurnLeft = do
   (robot, _) <- getWorld
