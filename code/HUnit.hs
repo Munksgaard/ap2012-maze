@@ -195,179 +195,179 @@ validMoveTestList = TestList[TestLabel "testValidMove1" testValidMove1
                             ,TestLabel "testValidMove47" testValidMove47]
 
 -- Test that oppositeDir truly returns the opposite dir
-oppositeDir_test1 :: Test
-oppositeDir_test1 = TestCase $ assertEqual "oppositeDir in: North" South (oppositeDir North)
+oppositeDirTest1 :: Test
+oppositeDirTest1 = TestCase $ assertEqual "oppositeDir in: North" South (oppositeDir North)
 
-oppositeDir_test2 :: Test
-oppositeDir_test2 = TestCase $ assertEqual "oppositeDir in: East" West (oppositeDir East)
+oppositeDirTest2 :: Test
+oppositeDirTest2 = TestCase $ assertEqual "oppositeDir in: East" West (oppositeDir East)
 
-oppositeDir_test3 :: Test
-oppositeDir_test3 = TestCase $ assertEqual "oppositeDir in: South" North (oppositeDir South)
+oppositeDirTest3 :: Test
+oppositeDirTest3 = TestCase $ assertEqual "oppositeDir in: South" North (oppositeDir South)
 
-oppositeDir_test4 :: Test
-oppositeDir_test4 = TestCase $ assertEqual "oppositeDir in: West" East (oppositeDir West)
+oppositeDirTest4 :: Test
+oppositeDirTest4 = TestCase $ assertEqual "oppositeDir in: West" East (oppositeDir West)
 -- No need for further testing here since this is all the possible arguments and
 -- the function is deterministic
  
 oppositeDirTestList :: Test
-oppositeDirTestList = TestList [ TestLabel "oppositeDir_test1" oppositeDir_test1
-                               , TestLabel "oppositeDir_test2" oppositeDir_test2
-                               , TestLabel "oppositeDir_test3" oppositeDir_test3
-                               , TestLabel "oppositeDir_test4" oppositeDir_test4
+oppositeDirTestList = TestList [ TestLabel "oppositeDirTest1" oppositeDirTest1
+                               , TestLabel "oppositeDirTest2" oppositeDirTest2
+                               , TestLabel "oppositeDirTest3" oppositeDirTest3
+                               , TestLabel "oppositeDirTest4" oppositeDirTest4
                                ]
 
 -- Test that the function truly makes a right turn
-rightTurn_test1 :: Test
-rightTurn_test1 = TestCase $ assertEqual "rightTurn in: North" East (rightTurn North)
+rightTurnTest1 :: Test
+rightTurnTest1 = TestCase $ assertEqual "rightTurn in: North" East (rightTurn North)
 
-rightTurn_test2 :: Test
-rightTurn_test2 = TestCase $ assertEqual "rightTurn in: East" South (rightTurn East)
+rightTurnTest2 :: Test
+rightTurnTest2 = TestCase $ assertEqual "rightTurn in: East" South (rightTurn East)
 
-rightTurn_test3 :: Test
-rightTurn_test3 = TestCase $ assertEqual "rightTurn in: South" West (rightTurn South)
+rightTurnTest3 :: Test
+rightTurnTest3 = TestCase $ assertEqual "rightTurn in: South" West (rightTurn South)
 
-rightTurn_test4 :: Test
-rightTurn_test4 = TestCase $ assertEqual "rightTurn in: West" North (rightTurn West)
+rightTurnTest4 :: Test
+rightTurnTest4 = TestCase $ assertEqual "rightTurn in: West" North (rightTurn West)
 
 -- Test that the function wraps after 4 rightturns
-rightTurn_test5 :: Test
-rightTurn_test5 = TestCase $ assertEqual "rightTurn wrap" North 
+rightTurnTest5 :: Test
+rightTurnTest5 = TestCase $ assertEqual "rightTurn wrap" North 
   (rightTurn $ rightTurn $ rightTurn $ rightTurn North)
 
 rightTurnTestList :: Test
-rightTurnTestList = TestList [ TestLabel "rightTurn_test1" rightTurn_test1
-                             , TestLabel "rightTurn_test2" rightTurn_test2
-                             , TestLabel "rightTurn_test3" rightTurn_test3
-                             , TestLabel "rightTurn_test4" rightTurn_test4
-                             , TestLabel "rightTurn_test5" rightTurn_test5
+rightTurnTestList = TestList [ TestLabel "rightTurnTest1" rightTurnTest1
+                             , TestLabel "rightTurnTest2" rightTurnTest2
+                             , TestLabel "rightTurnTest3" rightTurnTest3
+                             , TestLabel "rightTurnTest4" rightTurnTest4
+                             , TestLabel "rightTurnTest5" rightTurnTest5
                              ]
 
  -- Test that the function truly makes a left turn
-leftTurn_test1 :: Test
-leftTurn_test1 = TestCase $ assertEqual "leftTurn in: North" West (leftTurn North)
+leftTurnTest1 :: Test
+leftTurnTest1 = TestCase $ assertEqual "leftTurn in: North" West (leftTurn North)
 
-leftTurn_test2 :: Test
-leftTurn_test2 = TestCase $ assertEqual "leftTurn in: East" North (leftTurn East)
+leftTurnTest2 :: Test
+leftTurnTest2 = TestCase $ assertEqual "leftTurn in: East" North (leftTurn East)
 
-leftTurn_test3 :: Test
-leftTurn_test3 = TestCase $ assertEqual "leftTurn in: South" East (leftTurn South)
+leftTurnTest3 :: Test
+leftTurnTest3 = TestCase $ assertEqual "leftTurn in: South" East (leftTurn South)
 
-leftTurn_test4 :: Test
-leftTurn_test4 = TestCase $ assertEqual "leftTurn in: West" South (leftTurn West)
+leftTurnTest4 :: Test
+leftTurnTest4 = TestCase $ assertEqual "leftTurn in: West" South (leftTurn West)
 -- All possible values
 
 -- Test that the function wraps after 4 leftturns
-leftTurn_test5 :: Test
-leftTurn_test5 = TestCase $ assertEqual "leftTurn wrap" North 
+leftTurnTest5 :: Test
+leftTurnTest5 = TestCase $ assertEqual "leftTurn wrap" North 
   (leftTurn $ leftTurn $ leftTurn $ leftTurn North)
 
 leftTurnTestList :: Test
-leftTurnTestList = TestList [ TestLabel "leftTurn_test1" leftTurn_test1
-                             , TestLabel "leftTurn_test2" leftTurn_test2
-                             , TestLabel "leftTurn_test3" leftTurn_test3
-                             , TestLabel "leftTurn_test4" leftTurn_test4
-                             , TestLabel "leftTurn_test5" leftTurn_test5
+leftTurnTestList = TestList [ TestLabel "leftTurnTest1" leftTurnTest1
+                             , TestLabel "leftTurnTest2" leftTurnTest2
+                             , TestLabel "leftTurnTest3" leftTurnTest3
+                             , TestLabel "leftTurnTest4" leftTurnTest4
+                             , TestLabel "leftTurnTest5" leftTurnTest5
                              ]
 
 -- Test that right- and leftTurns are truly opposite
-rightleft_test1 :: Test
-rightleft_test1 = TestCase $ assertEqual "right/left Test1 in: North" 
+rightleftTest1 :: Test
+rightleftTest1 = TestCase $ assertEqual "right/left Test1 in: North" 
   (rightTurn North) (oppositeDir (leftTurn North))
 
-rightleft_test2 :: Test
-rightleft_test2 = TestCase $ assertEqual "right/left Test2 in: East" 
+rightleftTest2 :: Test
+rightleftTest2 = TestCase $ assertEqual "right/left Test2 in: East" 
   (rightTurn East) (oppositeDir (leftTurn East))
 
-rightleft_test3 :: Test
-rightleft_test3 = TestCase $ assertEqual "right/left Test3 in: South" 
+rightleftTest3 :: Test
+rightleftTest3 = TestCase $ assertEqual "right/left Test3 in: South" 
   (rightTurn South) (oppositeDir (leftTurn South))
 
-rightleft_test4 :: Test
-rightleft_test4 = TestCase $ assertEqual "right/left Test4 in: West" 
+rightleftTest4 :: Test
+rightleftTest4 = TestCase $ assertEqual "right/left Test4 in: West" 
   (rightTurn West) (oppositeDir (leftTurn West))
 
 rightleftTestList :: Test
-rightleftTestList = TestList [ TestLabel "right/left test1" rightleft_test1
-                    , TestLabel "right/left test2" rightleft_test2
-                    , TestLabel "right/left test3" rightleft_test3
-                    , TestLabel "right/left test4" rightleft_test4
+rightleftTestList = TestList [ TestLabel "right/left test1" rightleftTest1
+                    , TestLabel "right/left test2" rightleftTest2
+                    , TestLabel "right/left test3" rightleftTest3
+                    , TestLabel "right/left test4" rightleftTest4
                     ]
 
 -- The move function asserts that the position and direction is a validmove.
 -- Test move in all directions
-move_test1 :: Test
-move_test1 = TestCase $ assertEqual "move test1 in: West (1,0)" (0,0) (move West (1,0))
+moveTest1 :: Test
+moveTest1 = TestCase $ assertEqual "move test1 in: West (1,0)" (0,0) (move West (1,0))
 
-move_test2 :: Test
-move_test2 = TestCase $ assertEqual "move test1 in: North (1,0)" (1,1) (move North (1,0))
+moveTest2 :: Test
+moveTest2 = TestCase $ assertEqual "move test1 in: North (1,0)" (1,1) (move North (1,0))
 
-move_test3 :: Test
-move_test3 = TestCase $ assertEqual "move test1 in: East (1,0)" (2,0) (move East (1,0))
+moveTest3 :: Test
+moveTest3 = TestCase $ assertEqual "move test1 in: East (1,0)" (2,0) (move East (1,0))
 
-move_test4 :: Test
-move_test4 = TestCase $ assertEqual "move test1 in: North (0,1)" (0,2) (move North (0,1))
+moveTest4 :: Test
+moveTest4 = TestCase $ assertEqual "move test1 in: North (0,1)" (0,2) (move North (0,1))
 
-move_test5 :: Test
-move_test5 = TestCase $ assertEqual "move test1 in: East (0,1)" (1,1) (move East (0,1))
+moveTest5 :: Test
+moveTest5 = TestCase $ assertEqual "move test1 in: East (0,1)" (1,1) (move East (0,1))
 
-move_test6 :: Test
-move_test6 = TestCase $ assertEqual "move test1 in: South (0,1)" (0,0) (move South (0,1))
+moveTest6 :: Test
+moveTest6 = TestCase $ assertEqual "move test1 in: South (0,1)" (0,0) (move South (0,1))
 
-move_test7 :: Test
-move_test7 = TestCase $ assertEqual "move test1 in: North (1,1)" (1,2) (move North (1,1))
+moveTest7 :: Test
+moveTest7 = TestCase $ assertEqual "move test1 in: North (1,1)" (1,2) (move North (1,1))
 
-move_test8 :: Test
-move_test8 = TestCase $ assertEqual "move test1 in: East (1,1)" (2,1) (move East (1,1))
+moveTest8 :: Test
+moveTest8 = TestCase $ assertEqual "move test1 in: East (1,1)" (2,1) (move East (1,1))
 
-move_test9 :: Test
-move_test9 = TestCase $ assertEqual "move test1 in: South (1,1)" (1,0) (move South (1,1))
+moveTest9 :: Test
+moveTest9 = TestCase $ assertEqual "move test1 in: South (1,1)" (1,0) (move South (1,1))
 
-move_test10 :: Test
-move_test10 = TestCase $ assertEqual "move test1 in: West (1,1)" (0,1) (move West (1,1))
+moveTest10 :: Test
+moveTest10 = TestCase $ assertEqual "move test1 in: West (1,1)" (0,1) (move West (1,1))
 
 moveTestList :: Test
-moveTestList = TestList $ [ TestLabel "move test1" move_test1
-                          , TestLabel "move test2" move_test2
-                          , TestLabel "move test3" move_test3
-                          , TestLabel "move test4" move_test4
-                          , TestLabel "move test5" move_test5
-                          , TestLabel "move test6" move_test6
-                          , TestLabel "move test7" move_test7
-                          , TestLabel "move test8" move_test8
-                          , TestLabel "move test9" move_test9
-                          , TestLabel "move test10" move_test10
-                          ]
+moveTestList = TestList [ TestLabel "move test1" moveTest1
+                        , TestLabel "move test2" moveTest2
+                        , TestLabel "move test3" moveTest3
+                        , TestLabel "move test4" moveTest4
+                        , TestLabel "move test5" moveTest5
+                        , TestLabel "move test6" moveTest6
+                        , TestLabel "move test7" moveTest7
+                        , TestLabel "move test8" moveTest8
+                        , TestLabel "move test9" moveTest9
+                        , TestLabel "move test10" moveTest10
+                        ]
 
 -- Test each direction horizontal, vertical and diagonal (while we're at it)
 --distTest :: Position -> Position -> Test
 --distTest p1 p2 res = TestCase $ assertEqual ("dist test1 in: " ++ p1 ++ " " ++ p2) res (dist p1 p2)
 
---dist_test1 = distTest (1,1) (0,0) 2
---dist_test2 = distTest (1,1) (0,1) 1
---dist_test3 = distTest (1,1) (0,2) 2
---dist_test4 = distTest (1,1) (1,2) 1
---dist_test5 = distTest (1,1) (2,2) 2
---dist_test6 = distTest (1,1) (2,1) 1
---dist_test7 = distTest (1,1) (2,0) 2
---dist_test8 = distTest (1,1) (1,0) 1
+--distTest1 = distTest (1,1) (0,0) 2
+--distTest2 = distTest (1,1) (0,1) 1
+--distTest3 = distTest (1,1) (0,2) 2
+--distTest4 = distTest (1,1) (1,2) 1
+--distTest5 = distTest (1,1) (2,2) 2
+--distTest6 = distTest (1,1) (2,1) 1
+--distTest7 = distTest (1,1) (2,0) 2
+--distTest8 = distTest (1,1) (1,0) 1
 ---- Test that horizontal and vertical returns distances > 1
---dist_test9 = distTest (0,0) (2,0) 2
---dist_test10 = distTest (2,0) (0,0) 2
---dist_test11 = distTest (0,0) (0,2) 2
---dist_test12 = distTest (0,2) (0,0) 2
+--distTest9 = distTest (0,0) (2,0) 2
+--distTest10 = distTest (2,0) (0,0) 2
+--distTest11 = distTest (0,0) (0,2) 2
+--distTest12 = distTest (0,2) (0,0) 2
 --
---distTestList = TestList $ [ TestLabel "dist test 1" dist_test1
---                          , TestLabel "dist test 2" dist_test2
---                          , TestLabel "dist test 3" dist_test2
---                          , TestLabel "dist test 4" dist_test2
---                          , TestLabel "dist test 5" dist_test2
---                          , TestLabel "dist test 6" dist_test2
---                          , TestLabel "dist test 7" dist_test2
---                          , TestLabel "dist test 8" dist_test2
---                          , TestLabel "dist test 9" dist_test2
---                          , TestLabel "dist test 10" dist_test2
---                          , TestLabel "dist test 11" dist_test2
---                          , TestLabel "dist test 12" dist_test2
+--distTestList = TestList $ [ TestLabel "dist test 1" distTest1
+--                          , TestLabel "dist test 2" distTest2
+--                          , TestLabel "dist test 3" distTest2
+--                          , TestLabel "dist test 4" distTest2
+--                          , TestLabel "dist test 5" distTest2
+--                          , TestLabel "dist test 6" distTest2
+--                          , TestLabel "dist test 7" distTest2
+--                          , TestLabel "dist test 8" distTest2
+--                          , TestLabel "dist test 9" distTest2
+--                          , TestLabel "dist test 10" distTest2
+--                          , TestLabel "dist test 11" distTest2
+--                          , TestLabel "dist test 12" distTest2
 --                          ]
 
 -- Test that fromList only returns a valid maze no matter the input
@@ -440,31 +440,31 @@ mixedValidCells = positiveValidCells
 mixedMaze :: Maze
 mixedMaze = fromList mixedCells
 
-fromList_test1 :: Test
-fromList_test1 = TestCase $ assertEqual "fromList test 1 " ((0,0),(4,4)) (bounds positiveMaze)
+fromListTest1 :: Test
+fromListTest1 = TestCase $ assertEqual "fromList test 1 " ((0,0),(4,4)) (bounds positiveMaze)
 
-fromList_test2 :: Test
-fromList_test2 = TestCase $ assertEqual "fromList test 2 " positiveValidCells (elems positiveMaze)
+fromListTest2 :: Test
+fromListTest2 = TestCase $ assertEqual "fromList test 2 " positiveValidCells (elems positiveMaze)
 
-fromList_test3 :: Test
-fromList_test3 = TestCase $ assertEqual "fromList test 3 " ((0,0),(0,0)) (bounds negativeMaze)
+fromListTest3 :: Test
+fromListTest3 = TestCase $ assertEqual "fromList test 3 " ((0,0),(0,0)) (bounds negativeMaze)
 
-fromList_test4 :: Test
-fromList_test4 = TestCase $ assertEqual "fromList test 4 " negativeValidCells (elems negativeMaze)
+fromListTest4 :: Test
+fromListTest4 = TestCase $ assertEqual "fromList test 4 " negativeValidCells (elems negativeMaze)
 
-fromList_test5 :: Test
-fromList_test5 = TestCase $ assertEqual "fromList test 5 " ((0,0),(4,4)) (bounds mixedMaze)
+fromListTest5 :: Test
+fromListTest5 = TestCase $ assertEqual "fromList test 5 " ((0,0),(4,4)) (bounds mixedMaze)
 
-fromList_test6 :: Test
-fromList_test6 = TestCase $ assertEqual "fromList test 6 " mixedValidCells (elems mixedMaze)
+fromListTest6 :: Test
+fromListTest6 = TestCase $ assertEqual "fromList test 6 " mixedValidCells (elems mixedMaze)
 
 fromListTestList :: Test
-fromListTestList = TestList [ TestLabel "fromList test 1" fromList_test1
-                            , TestLabel "fromList test 2" fromList_test2
-                            , TestLabel "fromList test 3" fromList_test3
-                            , TestLabel "fromList test 4" fromList_test4
-                            , TestLabel "fromList test 5" fromList_test5
-                            , TestLabel "fromList test 6" fromList_test6
+fromListTestList = TestList [ TestLabel "fromList test 1" fromListTest1
+                            , TestLabel "fromList test 2" fromListTest2
+                            , TestLabel "fromList test 3" fromListTest3
+                            , TestLabel "fromList test 4" fromListTest4
+                            , TestLabel "fromList test 5" fromListTest5
+                            , TestLabel "fromList test 6" fromListTest6
                             ]
 
 runAllTests :: IO ()
