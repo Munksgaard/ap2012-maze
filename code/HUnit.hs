@@ -3,6 +3,66 @@ import World
 import Test.HUnit
 import Data.Array
 
+positiveValidIndices :: [(Integer, Integer)]
+positiveValidIndices = [ (0,0),(0,1),(0,2),(0,3),(0,4),(1,0),(1,1),(1,2),(1,3),(1,4)
+                       , (2,0),(2,1),(2,2),(2,3),(2,4),(3,0),(3,1),(3,2),(3,3),(3,4)
+                       , (4,0),(4,1),(4,2),(4,3),(4,4)]
+
+positiveValidCells :: [[Direction]]
+positiveValidCells = [[North,South,West],[North,South,West]
+                    ,[South,West],[West,East]
+                    ,[North,West],[South],[North]
+                    ,[South,East],[North,West]
+                    ,[North,South,East],[North,South]
+                    ,[South,East],[West,East],[]
+                    ,[North,West,East],[North,South]
+                    ,[South,West],[West]
+                    ,[],[North,West,East]
+                    ,[North,South,East],[North,South,East]
+                    ,[North,South,East],[South,East]
+                    ,[North,West,East]]
+
+positiveMaze :: Maze
+positiveMaze = fromList positiveCells
+
+negativeCells :: [((Int, Int), [Direction])]
+negativeCells = [((0,0),[North,South,West]),((0,-1),[North,South,West])
+                    ,((0,-2),[South,West]),((0,-3),[West,East])
+                    ,((0,-4),[North,West]),((-1,0),[South]),((-1,-1),[North])
+                    ,((-1,-2),[South,East]),((-1,-3),[North,West])
+                    ,((-1,-4),[North,South,East]),((-2,-0),[North,South])
+                    ,((-2,-1),[South,East]),((-2,-2),[West,East]),((-2,-3),[])
+                    ,((-2,-4),[North,West,East]),((-3,-0),[North,South])
+                    ,((-3,-1),[South,West]),((-3,-2),[West])
+                    ,((-3,-3),[]),((-3,-4),[North,West,East])
+                    ,((-4,-0),[North,South,East]),((-4,-1),[North,South,East])
+                    ,((-4,-2),[North,South,East]),((-4,-3),[South,East])
+                    ,((-4,-4),[North,West,East])]
+
+negativeValidIndices :: [(Integer, Integer)]
+negativeValidIndices = [(0,0)]
+
+negativeValidCells :: [[Direction]]
+negativeValidCells = [[North,South,West]]
+
+negativeMaze :: Maze
+negativeMaze = fromList negativeCells
+
+allWallsMaze :: Maze
+allWallsMaze = fromList [((0,0), [North, East, South, West])]
+
+emptyMaze :: Maze
+emptyMaze = fromList []
+
+mixedCells :: [((Int, Int), [Direction])]
+mixedCells = positiveCells ++ negativeCells
+
+mixedValidCells :: [[Direction]]
+mixedValidCells = positiveValidCells
+
+mixedMaze :: Maze
+mixedMaze = fromList mixedCells
+
 -- Tests for validMove 
 testValidMove1 :: Test
 testValidMove1 = TestCase (assertEqual "validMove (0,0) (0,0)" False (validMove positiveMaze (0,0) (0,0)))
@@ -385,60 +445,6 @@ positiveCells =[((0,0),[North,South,West]),((0,1),[North,South,West])
                     ,((4,0),[North,South,East]),((4,1),[North,South,East])
                     ,((4,2),[North,South,East]),((4,3),[South,East])
                     ,((4,4),[North,West,East])]
-
-positiveValidIndices :: [(Integer, Integer)]
-positiveValidIndices = [ (0,0),(0,1),(0,2),(0,3),(0,4),(1,0),(1,1),(1,2),(1,3),(1,4)
-                       , (2,0),(2,1),(2,2),(2,3),(2,4),(3,0),(3,1),(3,2),(3,3),(3,4)
-                       , (4,0),(4,1),(4,2),(4,3),(4,4)]
-
-positiveValidCells :: [[Direction]]
-positiveValidCells = [[North,South,West],[North,South,West]
-                    ,[South,West],[West,East]
-                    ,[North,West],[South],[North]
-                    ,[South,East],[North,West]
-                    ,[North,South,East],[North,South]
-                    ,[South,East],[West,East],[]
-                    ,[North,West,East],[North,South]
-                    ,[South,West],[West]
-                    ,[],[North,West,East]
-                    ,[North,South,East],[North,South,East]
-                    ,[North,South,East],[South,East]
-                    ,[North,West,East]]
-
-positiveMaze :: Maze
-positiveMaze = fromList positiveCells
-
-negativeCells :: [((Int, Int), [Direction])]
-negativeCells = [((0,0),[North,South,West]),((0,-1),[North,South,West])
-                    ,((0,-2),[South,West]),((0,-3),[West,East])
-                    ,((0,-4),[North,West]),((-1,0),[South]),((-1,-1),[North])
-                    ,((-1,-2),[South,East]),((-1,-3),[North,West])
-                    ,((-1,-4),[North,South,East]),((-2,-0),[North,South])
-                    ,((-2,-1),[South,East]),((-2,-2),[West,East]),((-2,-3),[])
-                    ,((-2,-4),[North,West,East]),((-3,-0),[North,South])
-                    ,((-3,-1),[South,West]),((-3,-2),[West])
-                    ,((-3,-3),[]),((-3,-4),[North,West,East])
-                    ,((-4,-0),[North,South,East]),((-4,-1),[North,South,East])
-                    ,((-4,-2),[North,South,East]),((-4,-3),[South,East])
-                    ,((-4,-4),[North,West,East])]
-
-negativeValidIndices :: [(Integer, Integer)]
-negativeValidIndices = [(0,0)]
-
-negativeValidCells :: [[Direction]]
-negativeValidCells = [[North,South,West]]
-
-negativeMaze :: Maze
-negativeMaze = fromList negativeCells
-
-mixedCells :: [((Int, Int), [Direction])]
-mixedCells = positiveCells ++ negativeCells
-
-mixedValidCells :: [[Direction]]
-mixedValidCells = positiveValidCells
-
-mixedMaze :: Maze
-mixedMaze = fromList mixedCells
 
 fromListTest1 :: Test
 fromListTest1 = TestCase $ assertEqual "fromList test 1 " ((0,0),(4,4)) (bounds positiveMaze)
