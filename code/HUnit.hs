@@ -1,5 +1,6 @@
 module HUnitTest where
 import World
+import MEL
 import Test.HUnit
 import Data.Array
 
@@ -473,6 +474,140 @@ fromListTestList = TestList [ TestLabel "fromList test 1" fromListTest1
                             , TestLabel "fromList test 6" fromListTest6
                             ]
 
+-- Tests for runProg with different mazes
+
+-- Test turns
+runProgTest1 :: Test
+runProgTest1 = TestCase $ assertEqual "TurnRight" (Stall ([(0,0)], East)) (runProg positiveMaze TurnRight)
+
+runProgTest2 :: Test
+runProgTest2 = TestCase $ assertEqual "TurnLeft" (Stall ([(0,0)], West)) (runProg positiveMaze TurnLeft)
+
+-- Test if and wall
+runProgTest3 :: Test
+runProgTest3 = TestCase $ assertEqual "If test 1" (Stall ([(0,0)], East)) (runProg positiveMaze $ If (Wall Ahead) TurnRight TurnLeft)
+
+runProgTest4 :: Test
+runProgTest4 = TestCase $ assertEqual "If test 2" (Stall ([(0,0)], West)) (runProg positiveMaze $ If (Wall ToRight) TurnRight TurnLeft)
+
+runProgTest5 :: Test
+runProgTest5 = TestCase $ assertEqual "if test 3" (Stall ([(0,0)], East)) (runProg positiveMaze $ If (Wall ToLeft) TurnRight TurnLeft)
+
+runProgTest6 :: Test
+runProgTest6 = TestCase $ assertEqual "if test 4" (Stall ([(0,0)], East)) (runProg positiveMaze $ If (Wall Behind) TurnRight TurnLeft)
+
+-- Test and
+runProgTest7 :: Test
+runProgTest7 = TestCase $ assertEqual "And test 1" (Stall ([(0,0)], East)) (runProg positiveMaze $ If (And (Wall Ahead) (Wall Behind)) TurnRight TurnLeft)
+
+runProgTest8 :: Test
+runProgTest8 = TestCase $ assertEqual "And test 2" (Stall ([(0,0)], West)) (runProg positiveMaze $ If (And (Wall Ahead) (Wall ToRight)) TurnRight TurnLeft)
+
+runProgTest9 :: Test
+runProgTest9 = TestCase $ assertEqual "And test 3" (Stall ([(0,0)], West)) (runProg positiveMaze $ If (And (Wall ToRight) (Wall ToRight)) TurnRight TurnLeft)
+
+runProgTest10 :: Test
+runProgTest10 = TestCase $ assertEqual "And test 4" (Stall ([(0,0)], West)) (runProg positiveMaze $ If (And (Wall ToRight) (Wall ToRight)) TurnRight TurnLeft)
+
+-- Test not
+runProgTest11 :: Test
+runProgTest11 = TestCase $ assertEqual "Not test 1" (Stall ([(0,0)], West)) (runProg positiveMaze $ If (Not (Wall Ahead)) TurnRight TurnLeft)
+
+runProgTest12 :: Test
+runProgTest12 = TestCase $ assertEqual "Not Test 2" (Stall ([(0,0)], East)) (runProg positiveMaze $ If (Not (Wall ToRight)) TurnRight TurnLeft)
+
+-- Test AtGoalPos
+runProgTest13 :: Test
+runProgTest13 = TestCase $ assertEqual "AtGoalPos test 1" (Stall ([(0,0)], West)) (runProg positiveMaze $ If AtGoalPos TurnRight TurnLeft)
+
+runProgTest14 :: Test
+runProgTest14 = TestCase $ assertEqual "AtGoalPos test 2" (Win ([(0,0)], East)) (runProg emptyMaze $ If AtGoalPos TurnRight TurnLeft)
+
+-- Test Block
+runProgTest15 :: Test
+runProgTest15 = TestCase $ assertEqual "TurnRight and Forward" (Stall ([(0,0), (1,0)], East)) (runProg positiveMaze $ Block [TurnRight, Forward])
+
+runProgTest16 :: Test
+runProgTest16 = TestCase $ assertEqual "TurnRight, Forward and TurnLeft" (Stall ([(0,0), (1,0)], North)) (runProg positiveMaze $ Block [TurnRight, Forward, TurnLeft])
+
+-- Test While
+runProgTest17 :: Test
+runProgTest17 = TestCase $ assertEqual "While test 1" (Stall ([(0,0)], East)) (runProg positiveMaze $ While (Wall Ahead) TurnLeft)
+
+runProgTest18 :: Test
+runProgTest18 = TestCase $ assertEqual "While test 2" (Stall ([(0,0)], North)) (runProg positiveMaze $ While (Wall ToRight) TurnRight)
+
+-- Test Forward
+runProgTest19 :: Test
+runProgTest19 = TestCase $ assertEqual "Forward test 1" (Stall ([(0,0), (1,0), (2,0), (3,0)], East)) (runProg positiveMaze $ Block [TurnRight, Forward, Forward, Forward])
+
+runProgTest20 :: Test
+runProgTest20 = TestCase $ assertEqual "Forward test 2" (MoveError "Could not move North in position (0,0)" $ Robot (0,0) North []) (runProg positiveMaze Forward)
+
+-- Test Backward
+runProgTest21 :: Test
+runProgTest21 = TestCase $ assertEqual "Backward test1" (Stall ([(0,0), (1,0), (2,0), (3,0)], West)) (runProg positiveMaze $ Block [TurnLeft, Backward, Backward, Backward])
+
+runProgTest22 :: Test
+runProgTest22 = TestCase $ assertEqual "Backward test 2" (MoveError "Could not move South in position (0,0)" $ Robot (0,0) North []) (runProg positiveMaze Backward)
+
+-- Win the maze
+runProgTest23 :: Test
+runProgTest23 = TestCase $ assertEqual "Win the maze 1" (Win ([(0,0),(1,0),(2,0),(3,0),(4,0)
+                                                            ,(3,0),(2,0),(1,0),(1,1),(2,1)
+                                                            ,(2,2),(2,3),(3,3),(3,2),(3,1)
+                                                            ,(4,1),(3,1),(3,2),(4,2),(3,2)
+                                                            ,(3,3),(4,3),(4,4)],North)) 
+                (runProg positiveMaze $ Block [While (Not AtGoalPos)
+                                                 (If (Not $ Wall ToRight)
+                                                   (Block [TurnRight, Forward])
+                                                   (If (Not $ Wall Ahead) Forward TurnLeft))])
+
+runProgTest24 :: Test
+runProgTest24 = TestCase $ assertEqual "Win the maze 2" (Win ([(0,0)], North))
+                (runProg emptyMaze $ Block [While (Not AtGoalPos)
+                                                 (If (Not $ Wall ToRight)
+                                                   (Block [TurnRight, Forward])
+                                                   (If (Not $ Wall Ahead) Forward TurnLeft))])
+
+runProgTest25 :: Test
+runProgTest25 = TestCase $ assertEqual "Win the maze 3" (Win ([(0,0)], North))
+                (runProg allWallsMaze $ Block [While (Not AtGoalPos)
+                                                 (If (Not $ Wall ToRight)
+                                                   (Block [TurnRight, Forward])
+                                                   (If (Not $ Wall Ahead) Forward TurnLeft))])
+
+
+
+
+runProgTestList :: Test
+runProgTestList = TestList [ TestLabel "runProg test 1" runProgTest1
+                           , TestLabel "runProg test 2" runProgTest2
+                           , TestLabel "runProg test 3" runProgTest3
+                           , TestLabel "runProg test 4" runProgTest4
+                           , TestLabel "runProg test 5" runProgTest5
+                           , TestLabel "runProg test 6" runProgTest6
+                           , TestLabel "runProg test 7" runProgTest7
+                           , TestLabel "runProg test 8" runProgTest8
+                           , TestLabel "runProg test 9" runProgTest9
+                           , TestLabel "runProg test 10" runProgTest10
+                           , TestLabel "runProg test 11" runProgTest11
+                           , TestLabel "runProg test 12" runProgTest12
+                           , TestLabel "runProg test 13" runProgTest13
+                           , TestLabel "runProg test 14" runProgTest14
+                           , TestLabel "runProg test 15" runProgTest15
+                           , TestLabel "runProg test 16" runProgTest16
+                           , TestLabel "runProg test 17" runProgTest17
+                           , TestLabel "runProg test 18" runProgTest18
+                           , TestLabel "runProg test 19" runProgTest19
+                           , TestLabel "runProg test 20" runProgTest20
+                           , TestLabel "runProg test 21" runProgTest21
+                           , TestLabel "runProg test 22" runProgTest22
+                           , TestLabel "runProg test 23" runProgTest23
+                           , TestLabel "runProg test 24" runProgTest24
+                           , TestLabel "runProg test 25" runProgTest25
+                           ]
+
 runAllTests :: IO ()
 runAllTests = do
   _ <- runTestTT oppositeDirTestList
@@ -482,4 +617,5 @@ runAllTests = do
   _ <- runTestTT moveTestList
   _ <- runTestTT fromListTestList
   _ <- runTestTT validMoveTestList
+  _ <- runTestTT runProgTestList
   return ()
