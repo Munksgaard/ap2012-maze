@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{ulem}
+\usepackage{palatino}
+\linespread{1.05}
+\title{Advanced Programming Assignment 1 - Navigating the Maze}
+\author{Phillip Munksgaard \& Ronni Elken Lindsgaard}
+\newcommand{\haskell}[1]{\texttt{#1}}
+\newcommand{\datatype}[1]{\underline{\textbf{#1}}}
+\newcommand{\direction}[1]{\textbf{#1}}
+\begin{document}
+\maketitle
+\section{The interpreter implementation}
+\subsection{World}
+The world module implements the basic navigation functions needed by the robot in order to walk around in the maze. 
+We have implemented functions that allows the robot to get a specific direction based on the current direction. 
+We could have used an \datatype{Enum} type, but we chose not to to be more explicit in the code.
+The \haskell{move} function is straight forward, it takes a position and returns an adjacent position in a specified direction.
+\haskell{validMove} is a bit more complex as it tests if a specified move from two positions is actually possible. 
+It tests whether both positions are within the bounds of the array as well as if the positions are adjacent. 
+Finally it tests if it there is a wall between the two fields, from either position. 
+That is, if the robot is at position (0,0) and asks to go to (1,0) \haskell{validMove} tests if the cell at position (0,0) has a wall in direction \direction{East} or the cell at position (1,0) has a wall in direction \direction{West}.
+
+Finally, the \haskell{fromList} function generates a maze of type \datatype{Maze} from a list as specified in the assignment description.
+The maze consists of a \datatype{Data.Array} and contains the cells located at positive positions (positions $>$ (0,0)) defined by the argument list. We find the maximum position from the list to define the bounds of the maze and call a helper function \haskell{generateMaze} which takes care of instantiating the actual array as well as define cells for each position (if they are not defined already in the array)
+\subsection{MEL}
+We have used what seems to be a mixture between the \datatype{State} and the 
+\datatype{Reader} monad to make \datatype{RobotCommand} a monadic type. 
+In order to handle illegal moves we use an \datatype{Either} type, 
+where we are able to return a string, with the error description, 
+as well as the entire robot (with information about the current location, 
+position and history).
+An error occurs when the robot tries to make a move that is not valid - 
+for instance when trying to walk into a wall. 
+We are of the opinion that this is a case for the programmer of the robot to solve, 
+as the robot can avoid it using MEL.
+For the \datatype{Result} type we have defined a datastructure that uses \direction{Win}, \direction{Stall} and \direction{MoveError} - \direction{Win} will be returned if the robot ends at the finish position (the robot must terminate the program itself when it think it is done). If \direction{Stall} is returned that means the program has run to its end, without succeeding getting to the finish position. Lastly \direction{MoveError} will be returned if the robot made an error as desrcibed above.
+
+\section{Assessment of our work}
+It is our judgement that we have made a well working solution, however we a not completely sure that there aren't any bugs - as that is hard to proove. Furthermore, although we have done our best to use the Haskell library there are probably functions or types we could have used instead of functions we have defined.
+
+We have specified a series of unit tests in order to test our environment and during testing we actually found a couple of bugs and it caused us to test other parts of our implementation better than we first thought. 
+
+In general we have tried making as few assessments as possible about the world, and about the robot program, as we try to handle illegal input in our code and return an error if it is not possible.
+During maze generation we remove illegal fields and fill positions that are not defined in the argument list. If the maze does not have walls around its bounds we still make sure that the robot cannot walk past the boundaries to undefined fields.
+Our unit tests as well as comments in the code reflect assessments we have of the input values due to the possible arguments that the code will generate. It would be wise to make further tests, especially random generated tests as created with QuickTest or another random test library - as these libraries probably will test scenarios that we have not thought of for our unit tests.
+
+We define a valid maze as a maze where it is possible to start at position (0,0) and enter the goal position (the top right corner of the maze where (x,y) equals the boundaries of the maze) without walking through a wall.
+For a valid maze fromList always generates a maze where it is possible to write a program that will terminate \haskell{runProg} with a \datatype{Result} of \direction{Win}.
+We do not promise that an arbitrary program will terminate, as it is possible to define valid programs in MEL that will never terminate (for instance the program \haskell{[While True TurnRight]}).
+\end{document}
+
