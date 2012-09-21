@@ -12,7 +12,7 @@ import Data.Array as A
 import Data.Maybe
 
 data Direction = North | East | South | West
-  deriving (Show,Eq,Read,Enum)
+  deriving (Show,Eq,Read)
 
 oppositeDir :: Direction -> Direction
 oppositeDir North = South
