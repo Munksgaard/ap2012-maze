@@ -36,7 +36,7 @@ type Position = (Int, Int)
 --newtype Position a = Position{getPosition :: (a,a)}
 --instance Monad Position where
 --  return x = Position (x,x)
---  Position (x,y) >>= f = 
+--  Position (x,y) >>= f =
 
 type Cell = [Direction]
 type Maze = Array Position Cell
@@ -45,14 +45,14 @@ type Maze = Array Position Cell
 -- Check for walls are lazy
 -- assert bound > (0,0)
 generateMaze :: Position -> [(Position, Cell)] -> Maze
-generateMaze (x,y) cells = 
-    A.array ((0,0), (x,y)) 
-         [((x1,y1), Data.Maybe.fromMaybe [] $ lookup (x1,y1) cells) 
+generateMaze (x,y) cells =
+    A.array ((0,0), (x,y))
+         [((x1,y1), Data.Maybe.fromMaybe [] $ lookup (x1,y1) cells)
               | x1 <- [0..x], y1 <- [0..y]]
- 
+
 -- Returns a position if the move is valid, else it returns nothing
 move :: Direction -> Position -> Position
---move d (x,y) | validMove 
+--move d (x,y) | validMove
 move North  (x, y) = (x, y+1)
 move West   (x, y) = (x-1, y)
 move South  (x, y) = (x, y-1)
@@ -62,11 +62,11 @@ move East   (x, y) = (x+1, y)
 -- largest size doesnt matter, however if they have different signs the maze is
 -- invalid
 dist :: Position -> Position -> Int
-dist (x1,y1) (x2,y2) = x + y 
+dist (x1,y1) (x2,y2) = x + y
   where x = abs $ x1 - x2
-        y = abs $ y1 - y2 
+        y = abs $ y1 - y2
 
--- Assert withinBounds p1 & withinBounds p2 
+-- Assert withinBounds p1 & withinBounds p2
 -- Assert Pos > (0,0)
 -- Assert dist p1 p2 == 1
 toDirection :: Position -> Position -> Maybe Direction
@@ -88,8 +88,8 @@ withinBounds m (x,y) = let (x1, y1) = (snd (A.bounds m))
 -- Tests wether a move from one position to the other is valid on a given board
 -- Assert withinBounds p1 & withinBounds p2
 validMove :: Maze -> Position -> Position -> Bool
-validMove m p1 p2 | dist p1 p2 == 1 = 
-                      withinBounds m p1 && withinBounds m p2 
+validMove m p1 p2 | dist p1 p2 == 1 =
+                      withinBounds m p1 && withinBounds m p2
                                        && not (blocked p1 p2 || blocked p2 p1)
                   | otherwise = False
     where blocked from to = case toDirection from to of

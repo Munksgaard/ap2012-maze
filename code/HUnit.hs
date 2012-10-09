@@ -64,7 +64,7 @@ mixedValidCells = positiveValidCells
 mixedMaze :: Maze
 mixedMaze = fromList mixedCells
 
--- Tests for validMove 
+-- Tests for validMove
 testValidMove1 :: Test
 testValidMove1 = TestCase (assertEqual "validMove (0,0) (0,0)" False (validMove positiveMaze (0,0) (0,0)))
 
@@ -269,7 +269,7 @@ oppositeDirTest4 :: Test
 oppositeDirTest4 = TestCase $ assertEqual "oppositeDir in: West" East (oppositeDir West)
 -- No need for further testing here since this is all the possible arguments and
 -- the function is deterministic
- 
+
 oppositeDirTestList :: Test
 oppositeDirTestList = TestList [ TestLabel "oppositeDirTest1" oppositeDirTest1
                                , TestLabel "oppositeDirTest2" oppositeDirTest2
@@ -292,7 +292,7 @@ rightTurnTest4 = TestCase $ assertEqual "rightTurn in: West" North (rightTurn We
 
 -- Test that the function wraps after 4 rightturns
 rightTurnTest5 :: Test
-rightTurnTest5 = TestCase $ assertEqual "rightTurn wrap" North 
+rightTurnTest5 = TestCase $ assertEqual "rightTurn wrap" North
   (rightTurn $ rightTurn $ rightTurn $ rightTurn North)
 
 rightTurnTestList :: Test
@@ -319,7 +319,7 @@ leftTurnTest4 = TestCase $ assertEqual "leftTurn in: West" South (leftTurn West)
 
 -- Test that the function wraps after 4 leftturns
 leftTurnTest5 :: Test
-leftTurnTest5 = TestCase $ assertEqual "leftTurn wrap" North 
+leftTurnTest5 = TestCase $ assertEqual "leftTurn wrap" North
   (leftTurn $ leftTurn $ leftTurn $ leftTurn North)
 
 leftTurnTestList :: Test
@@ -332,19 +332,19 @@ leftTurnTestList = TestList [ TestLabel "leftTurnTest1" leftTurnTest1
 
 -- Test that right- and leftTurns are truly opposite
 rightleftTest1 :: Test
-rightleftTest1 = TestCase $ assertEqual "right/left Test1 in: North" 
+rightleftTest1 = TestCase $ assertEqual "right/left Test1 in: North"
   (rightTurn North) (oppositeDir (leftTurn North))
 
 rightleftTest2 :: Test
-rightleftTest2 = TestCase $ assertEqual "right/left Test2 in: East" 
+rightleftTest2 = TestCase $ assertEqual "right/left Test2 in: East"
   (rightTurn East) (oppositeDir (leftTurn East))
 
 rightleftTest3 :: Test
-rightleftTest3 = TestCase $ assertEqual "right/left Test3 in: South" 
+rightleftTest3 = TestCase $ assertEqual "right/left Test3 in: South"
   (rightTurn South) (oppositeDir (leftTurn South))
 
 rightleftTest4 :: Test
-rightleftTest4 = TestCase $ assertEqual "right/left Test4 in: West" 
+rightleftTest4 = TestCase $ assertEqual "right/left Test4 in: West"
   (rightTurn West) (oppositeDir (leftTurn West))
 
 rightleftTestList :: Test
@@ -557,7 +557,7 @@ runProgTest23 = TestCase $ assertEqual "Win the maze 1" (Win ([(0,0),(1,0),(2,0)
                                                             ,(3,0),(2,0),(1,0),(1,1),(2,1)
                                                             ,(2,2),(2,3),(3,3),(3,2),(3,1)
                                                             ,(4,1),(3,1),(3,2),(4,2),(3,2)
-                                                            ,(3,3),(4,3),(4,4)],North)) 
+                                                            ,(3,3),(4,3),(4,4)],North))
                 (runProg positiveMaze $ Block [While (Not AtGoalPos)
                                                  (If (Not $ Wall ToRight)
                                                    (Block [TurnRight, Forward])

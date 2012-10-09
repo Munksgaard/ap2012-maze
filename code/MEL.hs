@@ -33,7 +33,7 @@ data Robot = Robot  { position :: Position
                     , direction :: Direction
                     , history::[Position]
                     }
-           deriving (Show, Eq)
+             deriving (Show, Eq)
 
 type World = (Robot, Maze)
 
@@ -66,7 +66,7 @@ tryMove maze pos dir = let newpos = move dir pos in
                              newpos
                          else pos
 
--- Moves the robot in a given direction, returns false if 
+-- Moves the robot in a given direction, returns false if
 moveRobot :: Maze -> Robot -> Direction -> Maybe Position
 moveRobot m r d = if validMove m oldPos newPos then Just newPos else Nothing
                 where oldPos = position r
@@ -90,10 +90,10 @@ robotError e = RC $ \_ -> Left e
 
 -- (World -> (a , World)) -> (a -> (World -> (b, World))) -> (World -> (b, World))
 interp :: Stm -> RobotCommand ()
-interp Forward = do 
+interp Forward = do
   (robot, maze) <- getWorld
-  let d = direction robot 
-  case moveRobot maze robot d of 
+  let d = direction robot
+  case moveRobot maze robot d of
     Just p -> setRobot Robot { position=p
                              , direction=d
                              , history=position robot : history robot}
@@ -128,7 +128,7 @@ interp (While c stm) = do
       interp $ While c stm
     else setRobot robot
 interp (Block []) = return ()
-interp (Block (stm:stms)) = do 
+interp (Block (stm:stms)) = do
   interp stm
   interp $ Block stms
 
